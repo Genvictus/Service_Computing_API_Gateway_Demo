@@ -1,0 +1,6 @@
+services:
+  dummy2:
+    build:
+      dockerfile: ./Dockerfile
+    ports:
+      - 7002:6969
