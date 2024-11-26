@@ -1,5 +1,0 @@
-include:
-  - ../APISIX/docker-compose.yaml
-  - ../services/client/docker-compose.yaml
-  - ../services/PineValleyHospital/docker-compose.yaml
-  - ../services/GrandOakHospital/docker-compose.yaml
