@@ -1,0 +1,5 @@
+services:
+  spruce-city-hospital:
+    build: .
+    ports:
+      - 7003:6969
