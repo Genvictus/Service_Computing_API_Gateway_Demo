@@ -1,0 +1,133 @@
+{
+	"info": {
+		"_postman_id": "9ea8bfba-ccef-4791-be5a-f03fdb0440d3",
+		"name": "API Gateway Demo",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "31434591"
+	},
+	"item": [
+		{
+			"name": "Grand Oak Hospital",
+			"item": [
+				{
+					"name": "Health Check",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:7001/healthcheck",
+							"host": [
+								"localhost"
+							],
+							"port": "7001",
+							"path": [
+								"healthcheck"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Doctors",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:7001/doctors",
+							"host": [
+								"localhost"
+							],
+							"port": "7001",
+							"path": [
+								"doctors"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Pine Valley Hospital",
+			"item": [
+				{
+					"name": "Health Check",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:7002/healthcheck",
+							"host": [
+								"localhost"
+							],
+							"port": "7002",
+							"path": [
+								"healthcheck"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Appointments",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:7002/appointments",
+							"host": [
+								"localhost"
+							],
+							"port": "7002",
+							"path": [
+								"appointments"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Spruce City Hospital",
+			"item": [
+				{
+					"name": "Health Check",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:7003/healthcheck",
+							"host": [
+								"localhost"
+							],
+							"port": "7003",
+							"path": [
+								"healthcheck"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Schedules",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:7003/schedules",
+							"host": [
+								"localhost"
+							],
+							"port": "7003",
+							"path": [
+								"schedules"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
