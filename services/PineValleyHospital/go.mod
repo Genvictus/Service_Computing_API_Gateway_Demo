@@ -1,4 +1,4 @@
-module github.com/Genvictus/Service_Computing_API_Gateway_Demo/PineValleyHospital
+module PineValleyHospital
 
 go 1.23.2
 
