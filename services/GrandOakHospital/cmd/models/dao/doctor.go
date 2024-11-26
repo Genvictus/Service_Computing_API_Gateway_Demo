@@ -1,9 +1,4 @@
-package main
-
-type Schedule struct {
-	Day            string `json:"day"`
-	AvailableRange string `json:"available_range"`
-}
+package dao
 
 type Doctor struct {
 	ID        int        `json:"id"`
