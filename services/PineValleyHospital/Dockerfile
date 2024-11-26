@@ -1,4 +1,4 @@
-FROM golang:1.23-alpine3.20 as build
+FROM golang:1.23-alpine3.20 AS build
 
 # Set destination for COPY
 WORKDIR /app
@@ -8,7 +8,7 @@ COPY ./ ./
 RUN go mod download
 
 # Build
-RUN CGO_ENABLED=0 GOOS=linux go build ./cmd/app
+RUN CGO_ENABLED=0 GOOS=linux go build -o app cmd/app.go
 
 FROM alpine:3.20
 

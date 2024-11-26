@@ -1,6 +1,5 @@
 services:
   grand-oak-hospital:
-    build:
-      dockerfile: ./Dockerfile
+    build: .
     ports:
-      - 7002:6969
+      - 7001:6969

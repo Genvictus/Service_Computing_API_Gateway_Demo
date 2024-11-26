@@ -1,6 +1,5 @@
 services:
   pine-valley-hospital:
-    build:
-      dockerfile: ./Dockerfile
+    build: .
     ports:
-      - 7001:6969
+      - 7002:6969
