@@ -1,4 +1,4 @@
-FROM golang:1.23-alpine as build
+FROM golang:1.23-alpine3.20 as build
 
 # Set destination for COPY
 WORKDIR /app
@@ -10,7 +10,7 @@ RUN go mod download
 # Build
 RUN CGO_ENABLED=0 GOOS=linux go build ./cmd/app
 
-FROM golang:1.23-alpine
+FROM alpine:3.20
 
 COPY --from=build /app/app /client-service
 
