@@ -1,5 +1,5 @@
 services:
-  dummy2:
+  grand-oak-hospital:
     build:
       dockerfile: ./Dockerfile
     ports:

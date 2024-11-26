@@ -1,4 +1,4 @@
-module github.com/Genvictus/Service_Computing_API_Gateway_Demo/dummy2
+module github.com/Genvictus/Service_Computing_API_Gateway_Demo/GrandOakHospital
 
 go 1.23.2
 

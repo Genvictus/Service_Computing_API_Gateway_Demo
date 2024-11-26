@@ -12,7 +12,7 @@ RUN CGO_ENABLED=0 GOOS=linux go build ./cmd/app
 
 FROM alpine:3.20
 
-COPY --from=build /app/app /dummy1-service
+COPY --from=build /app/app /GrandOakHospital-service
 
 # Optional:
 # To bind to a TCP port, runtime parameters must be supplied to the docker command.
@@ -22,4 +22,4 @@ COPY --from=build /app/app /dummy1-service
 EXPOSE 6969
 
 # Run
-CMD ["/dummy1-service"]
+CMD ["/GrandOakHospital-service"]

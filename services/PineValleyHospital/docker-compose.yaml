@@ -1,5 +1,5 @@
 services:
-  dummy1:
+  pine-valley-hospital:
     build:
       dockerfile: ./Dockerfile
     ports:
