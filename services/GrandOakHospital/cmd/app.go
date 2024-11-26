@@ -1,7 +1,9 @@
 package main
 
 import (
-	"fmt"
+	"GrandOakHospital/cmd/models/dao"
+	"GrandOakHospital/cmd/models/dto"
+	"log"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -9,20 +11,25 @@ import (
 func main() {
 	app := fiber.New()
 
-	app.Get("/alivecheck", func(c *fiber.Ctx) error {
-		fmt.Println("Health Check request received!")
-		return c.SendString("ok")
+	app.Get("/healthcheck", func(c *fiber.Ctx) error {
+		log.Println("Health check request received!")
+		response := dto.HealthCheckResponse{
+			Status: "ok",
+		}
+		return c.JSON(response)
 	})
 
-	app.Get("/doctors/available", func(c *fiber.Ctx) error {
-		doctors := []Doctor{
+	app.Get("/doctors", func(c *fiber.Ctx) error {
+		log.Println("Available doctors requested!")
+
+		doctors := []dao.Doctor{
 			{
 				ID:        1,
 				FullName:  "Dr. Michael Green",
 				Gender:    "Male",
 				Phone:     "555-4321",
 				Specialty: "Rheumatology",
-				Schedule: []Schedule{
+				Schedule: []dao.Schedule{
 					{Day: "Monday", AvailableRange: "08:00 AM - 04:00 PM"},
 					{Day: "Wednesday", AvailableRange: "10:00 AM - 02:00 PM"},
 					{Day: "Friday", AvailableRange: "01:00 PM - 05:00 PM"},
@@ -34,7 +41,7 @@ func main() {
 				Gender:    "Female",
 				Phone:     "555-6789",
 				Specialty: "Nephrology",
-				Schedule: []Schedule{
+				Schedule: []dao.Schedule{
 					{Day: "Tuesday", AvailableRange: "09:00 AM - 03:00 PM"},
 					{Day: "Thursday", AvailableRange: "08:00 AM - 12:00 PM"},
 				},
@@ -45,7 +52,7 @@ func main() {
 				Gender:    "Female",
 				Phone:     "555-9870",
 				Specialty: "Geriatrics",
-				Schedule: []Schedule{
+				Schedule: []dao.Schedule{
 					{Day: "Monday", AvailableRange: "10:00 AM - 01:00 PM"},
 					{Day: "Wednesday", AvailableRange: "02:00 PM - 06:00 PM"},
 					{Day: "Friday", AvailableRange: "09:00 AM - 01:00 PM"},
@@ -57,7 +64,7 @@ func main() {
 				Gender:    "Male",
 				Phone:     "555-1123",
 				Specialty: "Podiatry",
-				Schedule: []Schedule{
+				Schedule: []dao.Schedule{
 					{Day: "Monday", AvailableRange: "08:00 AM - 02:00 PM"},
 					{Day: "Thursday", AvailableRange: "12:00 PM - 04:00 PM"},
 					{Day: "Saturday", AvailableRange: "10:00 AM - 02:00 PM"},
@@ -65,7 +72,6 @@ func main() {
 			},
 		}
 
-		fmt.Println("Available doctors requested!")
 		return c.JSON(doctors)
 	})
 
