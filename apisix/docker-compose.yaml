@@ -22,10 +22,10 @@ services:
     image: apache/apisix:${APISIX_IMAGE_TAG:-3.11.0-debian}
     restart: always
     volumes:
-      - ./apisix_conf/config.yaml:/usr/local/apisix/conf/config.yaml:ro
-      - ./apisix_conf/apisix.yaml:/usr/local/apisix/conf/apisix.yaml:ro
-    depends_on:
-      - etcd
+      - ./apisix_conf/config.yaml:/usr/local/apisix/conf/config.yaml
+      - ./apisix_conf/apisix.yaml:/usr/local/apisix/conf/apisix.yaml
+    # depends_on:
+    #   - etcd
     ##network_mode: host
     ports:
       - "9180:9180/tcp"
@@ -33,23 +33,27 @@ services:
       - "9091:9091/tcp"
       - "9443:9443/tcp"
       - "9092:9092/tcp"
-    networks:
-      apisix:
-
-  etcd:
-    image: bitnami/etcd:3.5.11
-    restart: always
-    volumes:
-      - etcd_data:/bitnami/etcd
     environment:
-      ETCD_ENABLE_V2: "true"
-      ALLOW_NONE_AUTHENTICATION: "yes"
-      ETCD_ADVERTISE_CLIENT_URLS: "http://etcd:2379"
-      ETCD_LISTEN_CLIENT_URLS: "http://0.0.0.0:2379"
-    ports:
-      - "2379:2379/tcp"
-    networks:
-      apisix:
+      APISIX_STAND_ALONE: true
+    env_file:
+      - demo.env
+    # networks:
+    #   apisix:
+
+  # etcd:
+  #   image: bitnami/etcd:3.5.11
+  #   restart: always
+  #   volumes:
+  #     - etcd_data:/bitnami/etcd
+  #   environment:
+  #     ETCD_ENABLE_V2: "true"
+  #     ALLOW_NONE_AUTHENTICATION: "yes"
+  #     ETCD_ADVERTISE_CLIENT_URLS: "http://etcd:2379"
+  #     ETCD_LISTEN_CLIENT_URLS: "http://0.0.0.0:2379"
+  #   ports:
+  #     - "2379:2379/tcp"
+  #   networks:
+  #     apisix:
 
   # web1:
   #   image: nginx:1.19.0-alpine
@@ -97,10 +101,10 @@ services:
   #   networks:
   #     apisix:
 
-networks:
-  apisix:
-    driver: bridge
+# networks:
+#   apisix:
+#     driver: bridge
 
-volumes:
-  etcd_data:
-    driver: local
+# volumes:
+#   etcd_data:
+#     driver: local

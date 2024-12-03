@@ -1,12 +1,39 @@
 routes:
   -
-    uri: /hello
-    service_id: 1
+    uri: /healthcheck-grandoak
+    plugins:
+      proxy-rewrite:
+        uri: /healthcheck
+    service_id: grandoak
+  -
+    uri: /healthcheck-pinevalley
+    plugins:
+      proxy-rewrite:
+        uri: /healthcheck
+    service_id: pinevalley
+  -
+    uri: /healthcheck-sprucecity
+    plugins:
+      proxy-rewrite:
+        uri: /healthcheck
+    service_id: sprucecity
 services:
   -
-    id: 1
+    id: grandoak
     upstream:
         nodes:
-            "127.0.0.1:1980": 1
+            "${{GRANDOAK_ENDPOINT}}": 1
+        type: roundrobin
+  -
+    id: pinevalley
+    upstream:
+        nodes:
+            "${{PINEVALLEY_ENDPOINT}}": 1
+        type: roundrobin
+  -
+    id: sprucecity
+    upstream:
+        nodes:
+            "${{SPRUCECITY_ENDPOINT}}": 1
         type: roundrobin
 #END
