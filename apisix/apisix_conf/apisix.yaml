@@ -17,6 +17,11 @@ routes:
       proxy-rewrite:
         uri: /healthcheck
     service_id: sprucecity
+  -
+    uri: /hospital/schedules
+    plugins:
+      public-api:
+    
 services:
   -
     id: grandoak

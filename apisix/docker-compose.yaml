@@ -24,6 +24,7 @@ services:
     volumes:
       - ./apisix_conf/config.yaml:/usr/local/apisix/conf/config.yaml
       - ./apisix_conf/apisix.yaml:/usr/local/apisix/conf/apisix.yaml
+      - ./plugins:/usr/local/apisix/plugins
     # depends_on:
     #   - etcd
     ##network_mode: host
