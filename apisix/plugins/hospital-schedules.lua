@@ -53,6 +53,45 @@ function _M.check_schema(conf)
   return true
 end
 
+--  Function to convert XML to table
+local function xml_to_table(xml_string)
+    local result = { doctors = {} }
+    
+    for doctor_element in xml_string:gmatch("<doctor>(.-)</doctor>") do
+        local doctor = {}
+        for field, value in doctor_element:gmatch("<(%w+)>(.-)</%1>") do
+            if field == "schedule" then
+                doctor.schedule = {}
+                for schedule_detail in doctor_element:gmatch("<schedule>(.-)</schedule>") do
+                    local schedule = {}
+                    for detail_field, detail_value in schedule_detail:gmatch("<(%w+)>(.-)</%1>") do
+                        schedule[detail_field] = detail_value
+                    end
+                    table.insert(doctor.schedule, schedule)
+                end
+            else
+                doctor[field] = value
+            end
+        end
+        table.insert(result.doctors, doctor)
+    end
+
+    return result
+end
+
+local function print_table(t, indent)
+    indent = indent or 0
+    for k, v in pairs(t) do
+        local prefix = string.rep("  ", indent) 
+        if type(v) == "table" then
+            core.log.warn(prefix .. tostring(k) .. ":")
+            print_table(v, indent + 1)
+        else
+            core.log.warn(prefix .. tostring(k) .. ": " .. tostring(v))
+        end
+    end
+end
+
 -- Function to be called during the access phase
 local function get_hospitals()
     local httpc = http.new()
@@ -68,16 +107,34 @@ local function get_hospitals()
         method = "GET",
     })
 
+    -- print the response body
+    core.log.warn(res_grandoak.body)
+    core.log.warn(res_pinevalley.body)
+    core.log.warn(res_sprucecity.body)
+
     -- Combine the tables together
     local grandoak_data = cjson.decode(res_grandoak.body)
     local pinevalley_data = cjson.decode(res_pinevalley.body)
-    -- local sprucecity_data = xml.from_string(res_sprucecity.body)
+    local sprucecity_data = xml_to_table(res_sprucecity.body) 
+
+    print_table(grandoak_data)
+    print_table(pinevalley_data)
+    print_table(sprucecity_data)
+
+    core.log.warn(cjson.encode(grandoak_data))
+    core.log.warn(cjson.encode(pinevalley_data))
+    core.log.warn(cjson.encode(sprucecity_data))
 
     local combined_response = grandoak_data
     combined_response = table.move(pinevalley_data, 1, #pinevalley_data, #combined_response + 1, combined_response)
-    core.log.warn(cjson.encode(combined_response))
-    -- combined_response = table.move(sprucecity_data, 1, #sprucecity_data, #combined_response + 1, combined_response)
+    
+    if sprucecity_data and sprucecity_data.doctors then
+        for _, doctor in ipairs(sprucecity_data.doctors) do
+            table.insert(combined_response, doctor)
+        end
+    end
 
+    core.log.warn(cjson.encode(combined_response))
     return 200, combined_response
 end
 
