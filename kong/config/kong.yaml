@@ -1,0 +1,25 @@
+_format_version: "2.1"
+_transform: true
+
+services:
+  - name: grand-oak
+    url: http://host.docker.internal:7001/doctors
+    routes:
+      - name: grand-oak-hospital-schedule
+        paths:
+          - /grand-oak
+        strip_path: true
+  - name: pine-valley
+    url: http://host.docker.internal:7002/appointments
+    routes:
+      - name: pine-valley-hospital-schedule
+        paths:
+          - /pine-valley
+        strip_path: true
+  - name: spruce-city
+    url: http://host.docker.internal:7003/schedules
+    routes:
+      - name: spruce-city-hospital-schedule
+        paths:
+          - /spruce-city
+        strip_path: true
