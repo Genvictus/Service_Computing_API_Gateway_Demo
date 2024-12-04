@@ -53,43 +53,77 @@ function _M.check_schema(conf)
   return true
 end
 
+local function format_time(hour, minute)
+    local period = "AM"
+    hour = tonumber(hour)
+
+    if hour >= 12 then
+        period = "PM"
+        if hour > 12 then
+            hour = hour - 12
+        end
+    elseif hour == 0 then
+        hour = 12
+    end
+
+    return string.format("%02d:%02d %s", hour, tonumber(minute), period)
+end
+
 --  Function to convert XML to table
 local function xml_to_table(xml_string)
     local result = { doctors = {} }
     
     for doctor_element in xml_string:gmatch("<doctor>(.-)</doctor>") do
         local doctor = {}
-        for field, value in doctor_element:gmatch("<(%w+)>(.-)</%1>") do
-            if field == "schedule" then
-                doctor.schedule = {}
-                for schedule_detail in doctor_element:gmatch("<schedule>(.-)</schedule>") do
-                    local schedule = {}
-                    for detail_field, detail_value in schedule_detail:gmatch("<(%w+)>(.-)</%1>") do
-                        schedule[detail_field] = detail_value
-                    end
-                    table.insert(doctor.schedule, schedule)
-                end
-            else
-                doctor[field] = value
+        
+        -- Extract first name and last name
+        for field, value in doctor_element:gmatch("<(%w+[_%w]*)>(.-)</%1>") do
+            -- Debugging output to check what is being matched
+            core.log.warn("Field: " .. field .. ", Value: " .. value)
+
+            if field == "first_name" then
+                doctor.first_name = value
+            elseif field == "last_name" then
+                doctor.last_name = value
+            elseif field == "gender" then
+                doctor.gender = value == "true" and "Male" or "Female"
+            elseif field == "id" then
+                doctor.id = tonumber(value)
+            elseif field == "phone" then
+                doctor.phone = value
+            elseif field == "email" then
+                doctor.email = value
+            elseif field == "specialty" then
+                doctor.specialty = value
             end
         end
+        
+        -- Extract schedule
+        doctor.schedule = {}
+        for schedule_detail in doctor_element:gmatch("<schedule>(.-)</schedule>") do
+            local day = schedule_detail:match("<day>(.-)</day>")
+            local start_hour = schedule_detail:match("<start_time><hour>(.-)</hour><minute>(.-)</minute></start_time>")
+            local end_hour = schedule_detail:match("<end_time><hour>(.-)</hour><minute>(.-)</minute></end_time>")
+
+            if day and start_hour and end_hour then
+                local start_time = format_time(start_hour, schedule_detail:match("<start_time><hour>.-</hour><minute>(.-)</minute></start_time>"))
+                local end_time = format_time(end_hour, schedule_detail:match("<end_time><hour>.-</hour><minute>(.-)</minute></end_time>"))
+
+                -- Create the schedule entry
+                local schedule_entry = {
+                    day = day,
+                    start_time = start_time,
+                    end_time = end_time
+                }
+                table.insert(doctor.schedule, schedule_entry)
+            end
+        end
+
+        -- Add the doctor to the result
         table.insert(result.doctors, doctor)
     end
 
     return result
-end
-
-local function print_table(t, indent)
-    indent = indent or 0
-    for k, v in pairs(t) do
-        local prefix = string.rep("  ", indent) 
-        if type(v) == "table" then
-            core.log.warn(prefix .. tostring(k) .. ":")
-            print_table(v, indent + 1)
-        else
-            core.log.warn(prefix .. tostring(k) .. ": " .. tostring(v))
-        end
-    end
 end
 
 -- Function to be called during the access phase
@@ -110,20 +144,11 @@ local function get_hospitals()
     -- print the response body
     core.log.warn(res_grandoak.body)
     core.log.warn(res_pinevalley.body)
-    core.log.warn(res_sprucecity.body)
 
     -- Combine the tables together
     local grandoak_data = cjson.decode(res_grandoak.body)
     local pinevalley_data = cjson.decode(res_pinevalley.body)
     local sprucecity_data = xml_to_table(res_sprucecity.body) 
-
-    print_table(grandoak_data)
-    print_table(pinevalley_data)
-    print_table(sprucecity_data)
-
-    core.log.warn(cjson.encode(grandoak_data))
-    core.log.warn(cjson.encode(pinevalley_data))
-    core.log.warn(cjson.encode(sprucecity_data))
 
     local combined_response = grandoak_data
     combined_response = table.move(pinevalley_data, 1, #pinevalley_data, #combined_response + 1, combined_response)
