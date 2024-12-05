@@ -23,3 +23,16 @@ services:
         paths:
           - /spruce-city
         strip_path: true
+  - name: hospital-schedule
+    url: http://localhost # Dummy URL; aggregation handled by plugin
+    routes:
+      - name: hospital-schedule-route
+        paths:
+          - /hospital/schedules
+        strip_path: true
+    plugins:
+      - name: aggregator
+        config:
+          grand_oak_service_url: "http://host.docker.internal:7001/doctors"
+          pine_valley_service_url: "http://host.docker.internal:7002/appointments"
+          spruce_city_service_url: "http://host.docker.internal:7003/schedules"

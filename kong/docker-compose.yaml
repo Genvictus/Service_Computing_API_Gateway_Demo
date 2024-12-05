@@ -1,10 +1,9 @@
-version: "3.9"
 networks:
   default:
     name: kong-net
 services:
   kong:
-    image: kong:2.5.0-alpine
+    image: kong:3.8.0
     hostname: kong
     container_name: kong
     environment:
@@ -15,6 +14,7 @@ services:
       KONG_ADMIN_ERROR_LOG: '/dev/stderr'
       KONG_ADMIN_LISTEN: "0.0.0.0:8001, 0.0.0.0:8444 ssl"
       KONG_DECLARATIVE_CONFIG: "/opt/kong/kong.yaml"
+      KONG_PLUGINS: "aggregator"
     command: "kong start"
     ports:
       - "8000:8000"
@@ -23,3 +23,4 @@ services:
       - "8444:8444"
     volumes:
       - ./config:/opt/kong
+      - ./kong/plugins:/usr/local/share/lua/5.1/kong/plugins
