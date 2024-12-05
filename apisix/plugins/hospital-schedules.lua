@@ -78,8 +78,6 @@ local function xml_to_table(xml_string)
         
         -- Extract first name and last name
         for field, value in doctor_element:gmatch("<(%w+[_%w]*)>(.-)</%1>") do
-            -- Debugging output to check what is being matched
-            core.log.warn("Field: " .. field .. ", Value: " .. value)
 
             if field == "first_name" then
                 doctor.first_name = value
@@ -91,8 +89,6 @@ local function xml_to_table(xml_string)
                 doctor.id = tonumber(value)
             elseif field == "phone" then
                 doctor.phone = value
-            elseif field == "email" then
-                doctor.email = value
             elseif field == "specialty" then
                 doctor.specialty = value
             end
@@ -141,16 +137,39 @@ local function get_hospitals()
         method = "GET",
     })
 
-    -- print the response body
-    core.log.warn(res_grandoak.body)
-    core.log.warn(res_pinevalley.body)
-
     -- Combine the tables together
     local grandoak_data = cjson.decode(res_grandoak.body)
     local pinevalley_data = cjson.decode(res_pinevalley.body)
     local sprucecity_data = xml_to_table(res_sprucecity.body) 
 
-    local combined_response = grandoak_data
+    -- Transform Grand Oak data to the expected format
+    local transformed_grandoak_data = {}
+    for _, doctor in ipairs(grandoak_data) do
+        local transformed_doctor = {
+            id = doctor.id,
+            phone = doctor.phone,
+            specialty = doctor.specialty,
+            gender = doctor.gender,
+            first_name = doctor.full_name:match("Dr%.%s*(%w+)%s+(%w+)"),
+            last_name = doctor.full_name:match("Dr%.%s*%w+%s+(%w+)"),
+            schedule = {}
+        }
+
+        -- Process the schedule
+        for _, schedule in ipairs(doctor.schedule) do
+            local start_time, end_time = schedule.available_range:match("(%d+:%d+ %a+) %- (%d+:%d+ %a+)")
+            table.insert(transformed_doctor.schedule, {
+                day = schedule.day,
+                start_time = start_time,
+                end_time = end_time
+            })
+        end
+
+        table.insert(transformed_grandoak_data, transformed_doctor)
+    end
+
+    -- Combine all data
+    local combined_response = transformed_grandoak_data
     combined_response = table.move(pinevalley_data, 1, #pinevalley_data, #combined_response + 1, combined_response)
     
     if sprucecity_data and sprucecity_data.doctors then
@@ -159,7 +178,6 @@ local function get_hospitals()
         end
     end
 
-    core.log.warn(cjson.encode(combined_response))
     return 200, combined_response
 end
 
